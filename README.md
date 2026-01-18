@@ -33,6 +33,8 @@ A simple ASP.NET Core MVC web application for viewing and saving weather forecas
 - **Database:** WeatherAppDB.sql  
 - **appsettings.json**
 
+---
+
 ## Demo Video
 
 You can view a demo of the application in action [here](https://drive.google.com/drive/folders/1r3kH8af0rLyjHPjOFqnn1VtamX1xJ9Jv?usp=drive_link).
