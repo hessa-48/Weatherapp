@@ -1,0 +1,59 @@
+﻿@model List<WEATHERAPP.Models.WeatherResult>
+
+@{
+    ViewData["Title"] = "Your Weather Results";
+}
+
+<div class="container mt-4">
+    <h2>Your Weather Results</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <form asp-action="SaveChanges" method="post">
+        <table class="table table-bordered table-striped mt-3">
+            <thead class="table-dark">
+                <tr>
+                    <th>City</th>
+                    <th>Humidity</th>
+                    <th>Temp Min</th>
+                    <th>Temp Max</th>
+                    <th>Date Added</th>
+                    <th>Date Recorded</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="text" name="results[@i].City" class="form-control" value="@Model[i].City" />
+                        </td>
+                        <td>
+                            <input type="number" name="results[@i].Humidity" class="form-control" value="@Model[i].Humidity" />
+                        </td>
+                        <td>
+                            <input type="number" step="0.1" name="results[@i].TempMin" class="form-control" value="@Model[i].TempMin" />
+                        </td>
+                        <td>
+                            <input type="number" step="0.1" name="results[@i].TempMax" class="form-control" value="@Model[i].TempMax" />
+                        </td>
+                        <td>
+                            @Model[i].DateAdded?.ToString("yyyy-MM-dd")
+                        </td>
+                        <td>
+                            <input type="date" name="results[@i].DateRecorded" class="form-control" value="@Model[i].DateRecorded.ToString("yyyy-MM-dd")" />
+                        </td>
+
+                        <!-- Hidden field to send ResultId -->
+                        <input type="hidden" name="results[@i].ResultId" value="@Model[i].ResultId" />
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>

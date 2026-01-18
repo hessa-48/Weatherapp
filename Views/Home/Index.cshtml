@@ -1,0 +1,9 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+
+<div class="container mt-5">
+    <h2>Welcome, @ViewBag.Username!</h2>
+    <p>This is your first page after login.</p>
+    <a class="btn btn-secondary" asp-controller="Account" asp-action="Logout">Logout</a>
+</div>

@@ -1,0 +1,51 @@
+﻿@{
+    ViewBag.Title = "Weather Page";
+    var weatherResult = ViewBag.WeatherResult as WEATHERAPP.Models.WeatherResult;
+}
+
+<div class="container mt-5">
+    <h2>Weather Forecast</h2>
+
+    @* عرض رسائل النجاح أو الخطأ *@
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    @* Form لإدخال اسم المدينة *@
+    <form method="post" asp-controller="Weather" asp-action="Index">
+        <div class="form-group">
+            <input class="form-control" type="text" name="city" placeholder="Enter city" required />
+        </div>
+        <button class="btn btn-primary mt-2" type="submit">Get Weather</button>
+    </form>
+
+    @* عرض البيانات بعد Get Weather *@
+    @if (weatherResult != null)
+    {
+        <hr />
+        <h4>Weather in @weatherResult.City</h4>
+        <p>Humidity: @weatherResult.Humidity %</p>
+        <p>Min Temp: @weatherResult.TempMin °C</p>
+        <p>Max Temp: @weatherResult.TempMax °C</p>
+
+        @* زر حفظ البيانات في DB *@
+        <form method="post" asp-controller="Weather" asp-action="Save">
+            <input type="hidden" name="city" value="@weatherResult.City" />
+            <input type="hidden" name="humidity" value="@weatherResult.Humidity" />
+            <input type="hidden" name="tempMin" value="@weatherResult.TempMin" />
+            <input type="hidden" name="tempMax" value="@weatherResult.TempMax" />
+            <input type="hidden" name="dateRecorded" value="@weatherResult.DateRecorded.ToString("s")" />
+            <button type="submit" class="btn btn-success mt-2">Save</button>
+        </form>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="text-danger mt-2">@ViewBag.Error</div>
+    }
+</div>

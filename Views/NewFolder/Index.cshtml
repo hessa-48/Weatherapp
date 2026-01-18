@@ -1,0 +1,81 @@
+﻿@model List<WEATHERAPP.Models.WeatherResult>
+
+@{
+    ViewData["Title"] = "Weather History";
+    int currentUserId = Context.Session.GetInt32("UserId") ?? 0;
+}
+
+<div class="container mt-5">
+    <h2>Your Weather History</h2>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="alert alert-info">No weather records found.</div>
+    }
+    else
+    {
+        <table class="table table-bordered" id="weatherTable">
+            <thead>
+                <tr>
+                    <th>City</th>
+                    <th>Humidity</th>
+                    <th>Min Temp</th>
+                    <th>Max Temp</th>
+                    <th>Date Recorded</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="hidden" class="resultId" value="@Model[i].ResultId" />
+                            <input class="form-control cityInput" value="@Model[i].City" />
+                        </td>
+                        <td><input class="form-control humidityInput" value="@Model[i].Humidity" /></td>
+                        <td><input class="form-control tempMinInput" value="@Model[i].TempMin" /></td>
+                        <td><input class="form-control tempMaxInput" value="@Model[i].TempMax" /></td>
+                        <td>@Model[i].DateRecorded.ToString("g")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <button id="btnSaveChanges" class="btn btn-success mt-3">Save Changes</button>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $("#btnSaveChanges").click(function () {
+
+            var updatedResults = [];
+
+            $("#weatherTable tbody tr").each(function () {
+                updatedResults.push({
+                    ResultId: parseInt($(this).find(".resultId").val()),
+                    City: $(this).find(".cityInput").val(),
+                    Humidity: parseInt($(this).find(".humidityInput").val()) || 0,
+                    TempMin: parseFloat($(this).find(".tempMinInput").val()) || 0,
+                    TempMax: parseFloat($(this).find(".tempMaxInput").val()) || 0,
+                    DateRecorded: new Date().toISOString()
+                });
+            });
+
+            $.ajax({
+                url: '/WeatherHistory/SaveChanges',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(updatedResults),
+                success: function (response) {
+                    alert(response);
+                    location.reload();
+                },
+                error: function () {
+                    alert("Error saving changes");
+                }
+            });
+        });
+    </script>
+}
