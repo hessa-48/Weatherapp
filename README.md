@@ -24,27 +24,11 @@ A simple ASP.NET Core MVC web application for viewing and saving weather forecas
 ---
 
 ## Project Structure
-WeatherApp/
-│
-├─ Controllers/
-│ ├─ AccountController.cs
-│ ├─ WeatherController.cs
-│ └─ WeatherHistoryController.cs
-│
-├─ Models/
-│ ├─ User.cs
-│ └─ WeatherResult.cs
-│
-├─ Services/
-│ └─ DatabaseService.cs
-│
-├─ Views/
-│ ├─ Account/
-│ ├─ Weather/
-│ └─ WeatherHistory/
-│
-├─ Database/
-│ └─ WeatherAppDB.sql
-│
-└─ appsettings.json
 
+**WeatherApp**
+- **Controllers:** AccountController.cs, WeatherController.cs, WeatherHistoryController.cs  
+- **Models:** User.cs, WeatherResult.cs  
+- **Services:** DatabaseService.cs  
+- **Views:** Account/, Weather/, WeatherHistory/  
+- **Database:** WeatherAppDB.sql  
+- **appsettings.json**
