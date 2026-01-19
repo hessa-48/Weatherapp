@@ -6,6 +6,22 @@
 }
 
 <div class="container mt-5">
+
+    <!-- 🔹 Navigation -->
+    <div class="mb-4">
+        <a asp-controller="Weather"
+           asp-action="Index"
+           class="btn btn-primary">
+            Weather
+        </a>
+
+        <a asp-controller="WeatherHistory"
+           asp-action="Index"
+           class="btn btn-outline-dark ms-2">
+            History
+        </a>
+    </div>
+
     <h2>Your Weather History</h2>
 
     @if (Model == null || Model.Count == 0)
@@ -32,16 +48,24 @@
                             <input type="hidden" class="resultId" value="@Model[i].ResultId" />
                             <input class="form-control cityInput" value="@Model[i].City" />
                         </td>
-                        <td><input class="form-control humidityInput" value="@Model[i].Humidity" /></td>
-                        <td><input class="form-control tempMinInput" value="@Model[i].TempMin" /></td>
-                        <td><input class="form-control tempMaxInput" value="@Model[i].TempMax" /></td>
+                        <td>
+                            <input class="form-control humidityInput" value="@Model[i].Humidity" />
+                        </td>
+                        <td>
+                            <input class="form-control tempMinInput" value="@Model[i].TempMin" />
+                        </td>
+                        <td>
+                            <input class="form-control tempMaxInput" value="@Model[i].TempMax" />
+                        </td>
                         <td>@Model[i].DateRecorded.ToString("g")</td>
                     </tr>
                 }
             </tbody>
         </table>
 
-        <button id="btnSaveChanges" class="btn btn-success mt-3">Save Changes</button>
+        <button id="btnSaveChanges" class="btn btn-success mt-3">
+            Save Changes
+        </button>
     }
 </div>
 

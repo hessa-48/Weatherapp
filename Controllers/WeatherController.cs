@@ -11,22 +11,42 @@ namespace WEATHERAPP.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _config;
 
-        public WeatherController(DatabaseService dbService, IHttpClientFactory httpClientFactory, IConfiguration config)
+        public WeatherController(
+            DatabaseService dbService,
+            IHttpClientFactory httpClientFactory,
+            IConfiguration config)
         {
             _dbService = dbService;
             _httpClientFactory = httpClientFactory;
             _config = config;
         }
 
+        // ===========================
+        // GET: Weather page
+        // ===========================
         [HttpGet]
         public IActionResult Index()
         {
+            // 🔒 User must be logged in
+            if (HttpContext.Session.GetInt32("UserId") == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             return View();
         }
 
+        // ===========================
+        // POST: Get weather from API
+        // ===========================
         [HttpPost]
         public async Task<IActionResult> Index(string city)
         {
+            if (HttpContext.Session.GetInt32("UserId") == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             if (string.IsNullOrWhiteSpace(city))
             {
                 ViewBag.Error = "Please enter a city";
@@ -37,7 +57,10 @@ namespace WEATHERAPP.Controllers
             {
                 var apiKey = _config["OpenWeatherMapAPIKey"];
                 var client = _httpClientFactory.CreateClient();
-                var url = $"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={apiKey}&units=metric";
+
+                var url =
+                    $"https://api.openweathermap.org/data/2.5/weather" +
+                    $"?q={city}&appid={apiKey}&units=metric";
 
                 var response = await client.GetAsync(url);
 
@@ -50,22 +73,18 @@ namespace WEATHERAPP.Controllers
                 var json = await response.Content.ReadAsStringAsync();
                 var data = JsonSerializer.Deserialize<JsonElement>(json);
 
-                int humidity = data.GetProperty("main").GetProperty("humidity").GetInt32();
-                double tempMin = data.GetProperty("main").GetProperty("temp_min").GetDouble();
-                double tempMax = data.GetProperty("main").GetProperty("temp_max").GetDouble();
-
-                var userId = HttpContext.Session.GetInt32("UserId") ?? 0;
-
-                ViewBag.WeatherResult = new WeatherResult
+                var weatherResult = new WeatherResult
                 {
-                    UserId = userId,
+                    UserId = HttpContext.Session.GetInt32("UserId"),
                     City = city,
-                    Humidity = humidity,
-                    TempMin = tempMin,
-                    TempMax = tempMax,
+                    Humidity = data.GetProperty("main").GetProperty("humidity").GetInt32(),
+                    TempMin = data.GetProperty("main").GetProperty("temp_min").GetDouble(),
+                    TempMax = data.GetProperty("main").GetProperty("temp_max").GetDouble(),
                     DateAdded = DateTime.Now,
                     DateRecorded = DateTime.Now
                 };
+
+                ViewBag.WeatherResult = weatherResult;
             }
             catch (Exception ex)
             {
@@ -75,12 +94,20 @@ namespace WEATHERAPP.Controllers
             return View();
         }
 
+        // ===========================
+        // POST: Save weather to DB
+        // ===========================
         [HttpPost]
-        public IActionResult Save(string city, int? humidity, double? tempMin, double? tempMax, DateTime? dateRecorded)
+        public IActionResult Save(
+            string city,
+            int? humidity,
+            double? tempMin,
+            double? tempMax,
+            DateTime? dateRecorded)
         {
-            var userId = HttpContext.Session.GetInt32("UserId") ?? 0;
+            var userId = HttpContext.Session.GetInt32("UserId");
 
-            if (userId == 0 || string.IsNullOrEmpty(city) || dateRecorded == null)
+            if (userId == null || string.IsNullOrEmpty(city) || dateRecorded == null)
             {
                 TempData["Error"] = "Invalid data or user not logged in.";
                 return RedirectToAction("Index");
@@ -107,7 +134,8 @@ namespace WEATHERAPP.Controllers
                 TempData["Error"] = "Error saving weather: " + ex.Message;
             }
 
-            return RedirectToAction("Index");
+            // ✅ Redirect directly to History page
+            return RedirectToAction("Index", "WeatherHistory");
         }
     }
 }
